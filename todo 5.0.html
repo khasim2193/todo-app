@@ -1,61 +1,136 @@
+
+
+
+
 <!doctype html>
-<html ng-app>
-  <head>
-    <title>My Angular App</title>
+<html >
+<head>
     
-  </head>
-  <body>
+    <style>
+    .done-true {
+      text-decoration: line-through;
+      color: grey;
+    }
+
+    input:required {
+    box-shadow:none;
+    }
+
+
+       </style>
+</head>
+
+<body style="/*background-color: lightblue ;*/ background-image: url('http://static3.bigstockphoto.com/thumbs/8/1/1/large1500/118121435.jpg');">
+<center>
+
+<h2 style="background-color:pink">
+TASKS TO BE DONE
+</h2>
+
+
 <div ng-app="myApp">
 
 <div ng-controller="TodoListController">
 
-<!-- to creat an input box -->
-
 <form ng-submit="addTodo()" name="form" >
-<!-- 
-we creat a form becuause in this section all our input,add are included -->
     <input type="text" ng-model="todoText"  size="30"  placeholder="add new todo here" required>
     <input class="btn-primary" type="submit" value="add"> 
 </form>
 
-<!-- we uae href to refer an link here we use empty such that it refer delet button -->
+<div>Incompleted : {{remaining()}}</div>
+<div>Completed : {{todos.length - remaining()}}</div>
 
 <a href="" ng-click="delete()">Delete</a>
+<!-- 
+its an class and can be called -->
 
+<ul class="applicaton">
+   <li ng-repeat="todo in todos | orderBy : $index:true">
+
+   	<!-- filter -->
+       <button type="button" ng-click="remove()">&#10008;</button>
+       <input type="checkbox" ng-model="todo.done">
+       <span class="done-{{todo.done}}" ng-hide="todo.editing">{{todo.text}}</span>
+       <input type="text" ng-show="todo.editing" ng-model="todo.text">
+       <button type="submit" ng-hide="todo.editing" ng-click="change(todo); todo.editing === true">Edit</button>
+       <button type="submit" ng-show="todo.editing" ng-click="save($index); todo.editing === false">Save</button>
+       <button type="submit" ng-show="todo.editing" ng-click="cancel($index); todo.editing === false">Cancel</button>
+    </li>
+</ul>
+
+</div>
 </div>
 
 
-  	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 <script >
 angular.module('myApp', []);
+
+// depencency
 angular.module('myApp').controller('TodoListController', ['$scope', function($scope) {
 //every controller has an associated $scope object 
 // $scope is dependency
 //it is an object which referse to an applicatipn model
 
- $scope.todos = [];
+    $scope.todos = [];
 
-//all todo data will assign to this array
-   
+
+    $scope.newField = [];
+
+
+
+  //to add to dos
 
     $scope.addTodo = function() {
-      
+        $scope.todos.push({text:$scope.todoText, done:false, editing: false});
+        $scope.todoText = '';
     };
 
+    $scope.remaining = function() {
+        var count = 0;
+        angular.forEach($scope.todos, function(todo) {
+            count += todo.done ? 0 : 1;
+//count=count+to.done.done
+//varaible x= (expression) ? value if true: value if false
+
+        });
+          return count;
+        };
+
+
+// for delete function
 
     $scope.delete = function() {
+        var oldTodos = $scope.todos;
+        $scope.todos = [];
+        angular.forEach(oldTodos, function(todo) {
+           if (!todo.done) $scope.todos.push(todo);
+        });
+    };
+//to remove
+    $scope.remove = function(){
+        $scope.todos.splice(this.$index, 1);
+    };
+
+//to change
+    $scope.change = function(field){
+        var todoIndex = $scope.todos.indexOf(field);
+        $scope.newField[todoIndex] = angular.copy(field);
+        $scope.todos[todoIndex].editing = true;
+    }
+//to save
+    $scope.save = function(index) {
+      $scope.todos[index].editing = false;
       
     };
-
-    $scope.remove = function(){
-    
+//to cancle 
+    $scope.cancel = function(index) {
+        $scope.todos[index] = $scope.newField[index];      
     };
 
-
-  
-
 }]);
-
 </script>
-  </body>
+
+ </center>
+</body>
 </html>
