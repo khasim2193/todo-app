@@ -6,10 +6,21 @@
   </head>
   <body>
 <div ng-app="myApp">
-	  Enter age is: <input type="text" ng-model="age"><br/>
-	show age: <span ng-bind="age"></span><br/>
 
-Hi everyone {{2*3}}
+<div ng-controller="TodoListController">
+
+<!-- to creat an input box -->
+
+<form ng-submit="addTodo()" name="form" >
+<!-- 
+we creat a form becuause in this section all our input,add are included -->
+    <input type="text" ng-model="todoText"  size="30"  placeholder="add new todo here" required>
+    <input class="btn-primary" type="submit" value="add"> 
+</form>
+
+<!-- we uae href to refer an link here we use empty such that it refer delet button -->
+
+<a href="" ng-click="delete()">Delete</a>
 
 </div>
 
@@ -17,6 +28,34 @@ Hi everyone {{2*3}}
   	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 <script >
 angular.module('myApp', []);
+angular.module('myApp').controller('TodoListController', ['$scope', function($scope) {
+//every controller has an associated $scope object 
+// $scope is dependency
+//it is an object which referse to an applicatipn model
+
+ $scope.todos = [];
+
+//all todo data will assign to this array
+   
+
+    $scope.addTodo = function() {
+      
+    };
+
+
+    $scope.delete = function() {
+      
+    };
+
+    $scope.remove = function(){
+    
+    };
+
+
+  
+
+}]);
+
 </script>
   </body>
 </html>
