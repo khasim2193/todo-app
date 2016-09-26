@@ -1,29 +1,40 @@
 
-
-
-
 <!doctype html>
 <html >
 <head>
     
     <style>
-    .done-true {
-      text-decoration: line-through;
-      color: grey;
-    }
+   .done-true {
+        text-decoration: line-through;
+        color: grey;
+      }
 
-    input:required {
-    box-shadow:none;
-    }
+      input:required {
+        background-color: antiquewhite;
+      }
+      a {
+        font-weight: bold;
+        color: red;
+      }
+
+      h2 {
+        background-color: #C5E1A5;
+        color: blue;
+        border-radius: 25px;
+        width: 250px;
+        height: 30px;
+        width: 3;
+        font-weight: inherit;
+      }
 
 
        </style>
 </head>
 
-<body style="/*background-color: lightblue ;*/ background-image: url('http://static3.bigstockphoto.com/thumbs/8/1/1/large1500/118121435.jpg');">
+<body style="background-image: url('http://image.shutterstock.com/z/stock-vector-vector-panoramic-water-color-illustration-of-hyderabad-city-383431915.jpg');" >
 <center>
 
-<h2 style="background-color:pink">
+<h2 >
 TASKS TO BE DONE
 </h2>
 
@@ -32,8 +43,10 @@ TASKS TO BE DONE
 
 <div ng-controller="TodoListController">
 
-<form ng-submit="addTodo()" name="form" >
+
+<form ng-submit="addTodo()" name="subject" >
     <input type="text" ng-model="todoText"  size="30"  placeholder="add new todo here" required>
+    <!-- <button ng-click="save(todoText)"></button> -->
     <input class="btn-primary" type="submit" value="add"> 
 </form>
 
@@ -41,22 +54,34 @@ TASKS TO BE DONE
 <div>Completed : {{todos.length - remaining()}}</div>
 
 <a href="" ng-click="delete()">Delete</a>
+
+
+<div id="searchBoxes" style="color:green">
+
+Find tasks: <input type="text"  ng-model="globalSearch.$">
+	
+
+</div>
+
 <!-- 
 its an class and can be called -->
 
-<ul class="applicaton">
-   <li ng-repeat="todo in todos | orderBy : $index:true">
+<ul class="application">
+   <li ng-repeat="todo in todos | orderBy : $index:true | filter:globalSearch">
 
-   	<!-- filter -->
-       <button type="button" ng-click="remove()">&#10008;</button>
+
+    <!-- filter -->
+
+       <button type="button" ng-click="delete(todo.id)">&#10008;</button>
        <input type="checkbox" ng-model="todo.done">
-       <span class="done-{{todo.done}}" ng-hide="todo.editing">{{todo.text}}</span>
-       <input type="text" ng-show="todo.editing" ng-model="todo.text">
-       <button type="submit" ng-hide="todo.editing" ng-click="change(todo); todo.editing === true">Edit</button>
+       <span class="done-{{todo.done}}" ng-hide="todo.editing">{{todo.subject}}</span>
+       <input type="text" ng-show="todo.editing" ng-model="todo.subject">
+       <button type="submit" ng-hide="todo.editing" ng-click="change(todo); todo.editing =true">Edit</button>
        <button type="submit" ng-show="todo.editing" ng-click="save($index); todo.editing === false">Save</button>
        <button type="submit" ng-show="todo.editing" ng-click="cancel($index); todo.editing === false">Cancel</button>
     </li>
 </ul>
+
 
 </div>
 </div>
@@ -65,65 +90,107 @@ its an class and can be called -->
  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 <script >
 angular.module('myApp', []);
+angular.module('myApp').controller('TodoListController', ['$scope','$http', function($scope,$http) {
 
-// depencency
-angular.module('myApp').controller('TodoListController', ['$scope', function($scope) {
-//every controller has an associated $scope object 
+  //every controller has an associated $scope object 
 // $scope is dependency
 //it is an object which referse to an applicatipn model
 
     $scope.todos = [];
 
+    //ajax call GET
+    
+    $http.get('http://rest.learncode.academy/api/johnbob/r2-1/')
+    .success(function(todos) {
+    //   // alert('for post');
+     $scope.loaded = true;
+    $scope.todos = todos;
+     }).error(function(err) {
+      alert(err);
+     });
+
 
     $scope.newField = [];
 
+    //TO ADD TODO/AJAX PUSH
 
-
-  //to add to dos
-
-    $scope.addTodo = function() {
-        $scope.todos.push({text:$scope.todoText, done:false, editing: false});
+    $scope.addTodo= function(title) {
+    $http.post('http://rest.learncode.academy/api/johnbob/r2-1/', {
+       subject: $scope.todoText
+    }).success(function(todo) {
+      $scope.todos.push({subject:$scope.todoText, done:false, editing: false});
         $scope.todoText = '';
-    };
+    }).error(function(err) {
+    //   // Alert if there's an error
+       return alert(err.message || "an error occurred");
+    });
+	};
+
+    //$scope.addTodo = function() {
+     //   $scope.todos.push({text:$scope.todoText, done:false, editing: false});
+      //  $scope.todoText = '';
+    //};
+
+
+    //FRO COMPLETED AND INCOMPLETED TASKS
 
     $scope.remaining = function() {
         var count = 0;
         angular.forEach($scope.todos, function(todo) {
             count += todo.done ? 0 : 1;
-//count=count+to.done.done
-//varaible x= (expression) ? value if true: value if false
-
         });
           return count;
         };
 
+  //FOR DELETING TODOS/AJAX DELETE
 
-// for delete function
-
-    $scope.delete = function() {
-        var oldTodos = $scope.todos;
+    $scope.delete = function(text) {
+	   
+	     $http.delete('http://rest.learncode.academy/api/johnbob/r2-1/'+text)
+    .success().error(function(err) {
+      alert(err);
+     });
+		 
+        var oldTodos = $scope.todos;  
         $scope.todos = [];
         angular.forEach(oldTodos, function(todo) {
            if (!todo.done) $scope.todos.push(todo);
         });
     };
-//to remove
+
+//TO REMOVE TODOS
     $scope.remove = function(){
         $scope.todos.splice(this.$index, 1);
     };
 
-//to change
+//TO CHANGE
+
     $scope.change = function(field){
+	    
         var todoIndex = $scope.todos.indexOf(field);
+		//alert(todoIndex);
         $scope.newField[todoIndex] = angular.copy(field);
         $scope.todos[todoIndex].editing = true;
     }
-//to save
+
+//TO SAVE
+    // $scope.save = function(index) {
+    //   $scope.todos[index].editing = false;
+    // };
+
     $scope.save = function(index) {
-      $scope.todos[index].editing = false;
-      
-    };
-//to cancle 
+    	$scope.todos[index].editing = false;
+   
+    $http.put('http://rest.learncode.academy/api/johnbob/r2-1/' + text, {
+      completed: todo.done
+
+
+    }).error(function(err) {
+      return alert(err.message || (err.errors && err.errors.completed) || "an error occurred");
+    });
+  };
+
+//TO CANCEL
     $scope.cancel = function(index) {
         $scope.todos[index] = $scope.newField[index];      
     };
