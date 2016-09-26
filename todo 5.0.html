@@ -76,9 +76,9 @@ its an class and can be called -->
        <input type="checkbox" ng-model="todo.done">
        <span class="done-{{todo.done}}" ng-hide="todo.editing">{{todo.subject}}</span>
        <input type="text" ng-show="todo.editing" ng-model="todo.subject">
-       <button type="submit" ng-hide="todo.editing" ng-click="change(todo); todo.editing =true">Edit</button>
-       <button type="submit" ng-show="todo.editing" ng-click="save($index); todo.editing === false">Save</button>
-       <button type="submit" ng-show="todo.editing" ng-click="cancel($index); todo.editing === false">Cancel</button>
+       <button style="color:lightseagreen" type="submit" ng-hide="todo.editing" ng-click="change(todo); todo.editing =true">Edit</button>
+       <button style="color:green"type="submit" ng-show="todo.editing" ng-click="save($index); todo.editing === false">Save</button>
+       <button style="color:red"type="submit" ng-show="todo.editing" ng-click="cancel($index); todo.editing === false">Cancel</button>
     </li>
 </ul>
 
